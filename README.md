@@ -1,9 +1,15 @@
 # Custom bluetooth keyboard for PROCREATE (ipad) and ClipStudio (win) v06
 
-
 ![image01](https://github.com/Roboxtools/Art_tools/blob/master/image03.jpg?raw=true)
 
 ![image02](https://github.com/Roboxtools/ArtKeyboard/blob/master/winclip.jpg?raw=true)
+
+## CircuitPython version
+Separate CircuitPython implementation available under the similarly named subfolder. Supports battery level readings, separate app profiles and modifier key to extend number of mappable actions per profile from 11 to 20.
+
+Adafruit CircuitPython available at https://circuitpython.org/board/feather_nrf52840_express/. Tested using version 5.3.0.
+
+## Original Arduino C/C++ version by Roboxtools
 
 **LAYOUT**
 
@@ -83,3 +89,5 @@ steps to test
 
 
 [![](http://img.youtube.com/vi/9TROEPfZXaY/0.jpg)](http://www.youtube.com/watch?v=9TROEPfZXaY "")
+
+ 
