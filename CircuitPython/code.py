@@ -131,6 +131,10 @@ mic_hot = True
 mouse_viggle = False
 viggle_timer = 1 # only sets initial countdown timer. Subsequent intervals set randomly
 mode = "comms"  # default operating mode
+enable_idle_led_time = time.time() # ensures initial value is set to trigger first idle warning when required
+idle_alert_on_time = 1 # led on time in seconds for idle alert
+idle_alert_off_time = 10 # led off time in seconds for idle alert
+disable_idle_led_time = None
 
 def get_voltage():
     """ Returns current battery voltage """
@@ -605,13 +609,19 @@ while True:
 
     indicate_mode(indicate_color)
 
-    if time.time() - idle_timer > 600:  # when device turned on and not connected to BLE and inactive for more than 10 minutes enable indicator led blinking
-        red_led.value = True
-        blue_led.value = True
-        time.sleep(1)
-        red_led.value = False
-        blue_led.value = False
-
+    if time.time() - idle_timer > 600:  # when device turned on and not connected to BLE and inactive for more than 10 minutes enable indicator leds blinking
+        if disable_idle_led_time:
+            if time.time() > disable_idle_led_time:
+                red_led.value = False
+                blue_led.value = False
+                enable_idle_led_time = time.time() + idle_alert_off_time
+                disable_idle_led_time = None
+        else:
+            if time.time() > enable_idle_led_time:
+                red_led.value = True
+                blue_led.value = True
+                disable_idle_led_time = time.time() + idle_alert_on_time
+                enable_idle_led_time = None
 
     while ble.connected:
         if mouse_viggle: # viggle mouse at random intervals between 10 and 60s while mouse_viggle mode is enabled
@@ -619,12 +629,21 @@ while True:
                     m.move(x=randrange(-3, 3), y=randrange(-3, 3))  # Move mouse randomly by max 3 pixels per direction
                     viggle_timer = randrange(10, 60) # set next interval for triggering mouse viggle to a random value in range
                     idle_timer = time.time()  # zero idle_timer
-        elif time.time() - idle_timer > 1800:  # when device turned on and connected to BLE but inactive for more than 30 minutes enable indicator leds
-            red_led.value = True
-            blue_led.value = True
-            time.sleep(1)
-            red_led.value = False
-            blue_led.value = False
+        
+        if time.time() - idle_timer > 1800:  # when device turned on and connected to BLE but inactive for more than 30 minutes enable indicator leds blinking
+            if disable_idle_led_time:
+                if time.time() > disable_idle_led_time:
+                    red_led.value = False
+                    blue_led.value = False
+                    enable_idle_led_time = time.time() + idle_alert_off_time
+                    disable_idle_led_time = None
+            else:
+                if time.time() > enable_idle_led_time:
+                    red_led.value = True
+                    blue_led.value = True
+                    disable_idle_led_time = time.time() + idle_alert_on_time
+                    enable_idle_led_time = None
+
         for button in buttons:
             if not button.value:
                 blue_led.value = False
